@@ -24,19 +24,26 @@ public class TicketsController : ControllerBase
 		_ticketRepository = ticketRepository;
 	}
 
-	[HttpPost]
-	public async Task<IActionResult> Post([FromBody] ConcertWithoutId concert)
+	[HttpGet("{ticketId}")]
+	public async Task<Ticket> GetTicketsById(int ticketId)
 	{
 		_logger.LogInformation("Starting request: {Method} {Path}", HttpContext.Request.Method, HttpContext.Request.Path);
-
-		if (concert == null)
-		{
-			_logger.LogInformation("Invalid null Concert Input on Post");
-			return BadRequest("Concert cannot be null");
-		}
-
-		Concert newConcert = await _concertRepository.AddConcertAsync(concert);
-		_logger.LogInformation("Concert {concertId} created", newConcert.Id);
-		return CreatedAtAction(nameof(Get), new { concertId = newConcert.Id }, newConcert);
+		return await _ticketRepository.GetTicketByIdAsync(ticketId);
 	}
+
+	//[HttpPost("reserved-tickets")]
+	//public async Task<IActionResult> Post([FromBody] TicketReservation ticketReservation)
+	//{
+	//	_logger.LogInformation("Starting request: {Method} {Path}", HttpContext.Request.Method, HttpContext.Request.Path);
+
+	//	if (ticketReservation == null)
+	//	{
+	//		_logger.LogInformation("Invalid null Ticket Reservation Input on Post");
+	//		return BadRequest("Ticket Reservation cannot be null");
+	//	}
+
+	//	Ticket newTicket = await _ticketRepository.AddTicketAsync(ticketReservation.ToTicketWithoutId());
+	//	_logger.LogInformation("Concert {concertId} created", newTicket.Id);
+	//	return CreatedAtAction(nameof(GetTicketsById), new { ticketId = newTicket.Id }, newTicket);
+	//}
 }

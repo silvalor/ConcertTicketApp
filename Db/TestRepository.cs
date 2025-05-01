@@ -127,12 +127,18 @@ namespace ConcertTicketApp.Db
 			_concerts.Add(concert);
 		}
 
-		public async Task<Ticket> AddTicketAsync(TicketWithoutId ticket)
+		public async Task<AddTicketResult> AddTicketAsync(TicketWithoutId ticket)
 		{
 			Ticket newTicket = ticket.ToTicket(_nextTicketId);
 			_nextTicketId++;
 			_tickets.Add(newTicket);
-			return newTicket;
+
+			//Check to make sure tickets are available.
+
+			return new AddTicketResult()
+			{
+				Status = AddTicketResult.AddTicketStatus.Success, NewTicket = newTicket
+			};
 		}
 		public async Task DeleteTicketAsync(int id)
 		{

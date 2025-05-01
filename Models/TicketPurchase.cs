@@ -2,11 +2,10 @@ using ConcertTicketApp.Models;
 
 namespace ConcertTicketApp
 {
-	public class TicketReservation
+	public class TicketPurchase
 	{
 		public int TicketTypeId { get; set; }
 		public int CustomerId { get; set; }
-		public TimeSpan? ReserveDuration { get; set; }
 		public int Quantity { get; set; }
 
 		public TicketWithoutId ToTicketWithoutId()
@@ -15,11 +14,10 @@ namespace ConcertTicketApp
 			{
 				TicketTypeId = TicketTypeId,
 				CustomerId = CustomerId,
-				ReserveDate = DateTime.Now,
 				PurchaseDate = null,
 				Quantity = Quantity,
 				PurchaseTotal = 0,
-				Status = "Reserved"
+				Status = "Purchased"
 			};
 		}
 	}
