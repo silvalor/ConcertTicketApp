@@ -9,6 +9,7 @@
 		Task UpdateTicketAsync(Ticket ticket);
 		Task<IEnumerable<Ticket>> GetTicketsByTicketTypeAsync(int ticketTypeId);
 		Task<IEnumerable<Ticket>> GetTicketsByCustomerIdAsync(int customerId);
+		Task<int> GetAvailableTicketCount(int concertId, int ticketTypeId);
 	}
 
 	public class AddTicketResult

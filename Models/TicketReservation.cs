@@ -4,21 +4,22 @@ namespace ConcertTicketApp
 {
 	public class TicketReservation
 	{
+		public int ConcertId { get; set; }
 		public int TicketTypeId { get; set; }
 		public int CustomerId { get; set; }
-		public TimeSpan? ReserveDuration { get; set; }
+		public int? MinutesReserved { get; set; }
 		public int Quantity { get; set; }
 
-		public TicketWithoutId ToTicketWithoutId()
+		public TicketWithoutId ToTicketWithoutId(DateTime startingTime)
 		{
 			return new TicketWithoutId
 			{
+				ConcertId = ConcertId,
 				TicketTypeId = TicketTypeId,
 				CustomerId = CustomerId,
-				ReserveDate = DateTime.Now,
+				ReserveExpiration = startingTime + TimeSpan.FromMinutes(MinutesReserved ?? 0),
 				PurchaseDate = null,
 				Quantity = Quantity,
-				PurchaseTotal = 0,
 				Status = "Reserved"
 			};
 		}

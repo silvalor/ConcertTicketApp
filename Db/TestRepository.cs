@@ -79,21 +79,21 @@ namespace ConcertTicketApp.Db
 			new Ticket
 			{
 				Id = 1,
+				ConcertId = 1,
 				TicketTypeId = 1,
 				CustomerId = 1,
-				PurchaseDate = DateTime.Now,
+				PurchaseDate = DateTime.Parse("2025-05-03T05:23:10.901Z"),
 				Quantity = 2,
-				PurchaseTotal = 200.00m,
 				Status = "Purchased"
 			},
 			new Ticket
 			{
 				Id = 2,
+				ConcertId = 1,
 				TicketTypeId = 2,
 				CustomerId = 2,
-				PurchaseDate = DateTime.Now,
+				PurchaseDate = DateTime.Parse("2025-05-03T05:23:10.901Z"),
 				Quantity = 1,
-				PurchaseTotal = 50.00m,
 				Status = "Reserved"
 			}
 		};
@@ -129,17 +129,48 @@ namespace ConcertTicketApp.Db
 
 		public async Task<AddTicketResult> AddTicketAsync(TicketWithoutId ticket)
 		{
+			int available = await GetAvailableTicketCount(ticket.ConcertId, ticket.TicketTypeId);
+			if (available < ticket.Quantity)
+			{
+				return new AddTicketResult()
+				{
+					Status = AddTicketResult.AddTicketStatus.InsufficientTickets,
+					NewTicket = null
+				};
+			}
+
 			Ticket newTicket = ticket.ToTicket(_nextTicketId);
 			_nextTicketId++;
 			_tickets.Add(newTicket);
-
-			//Check to make sure tickets are available.
-
 			return new AddTicketResult()
 			{
 				Status = AddTicketResult.AddTicketStatus.Success, NewTicket = newTicket
 			};
 		}
+
+		public async Task<int> GetAvailableTicketCount(int concertId, int ticketTypeId)
+		{
+			var ticketType = _ticketTypes.FirstOrDefault(tt => tt.Id == ticketTypeId && tt.ConcertId == concertId);
+			if (ticketType == null) return 0;
+			int ticketsUnavailable = _tickets.Where(TicketIsConsumingAvailabilty).Sum(t => t.Quantity);
+			return ticketType.Capacity - ticketsUnavailable;
+		}
+
+		private static bool TicketIsConsumingAvailabilty(Ticket ticket)
+		{
+			switch(ticket.Status)
+			{
+				case "Purchased":
+					return true;
+				case "Reserved":
+					if (ticket.ReserveExpiration.HasValue)
+						return ticket.ReserveExpiration > DateTime.Now;
+					return false;
+				default:
+					return false;
+			}
+		}
+
 		public async Task DeleteTicketAsync(int id)
 		{
 			_tickets.RemoveAll(t => t.Id == id);

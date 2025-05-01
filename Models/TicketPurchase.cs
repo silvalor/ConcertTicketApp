@@ -16,7 +16,6 @@ namespace ConcertTicketApp
 				CustomerId = CustomerId,
 				PurchaseDate = null,
 				Quantity = Quantity,
-				PurchaseTotal = 0,
 				Status = "Purchased"
 			};
 		}

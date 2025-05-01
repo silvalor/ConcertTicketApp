@@ -14,12 +14,15 @@ public class TicketTypesController : ControllerBase
 {
 	private readonly ILogger<ConcertsController> _logger;
     private readonly IConcertRepository _concertRepository;
+	private readonly ITicketRepository _ticketRepository;
 
 	public TicketTypesController(ILogger<ConcertsController> logger,
-        IConcertRepository concertRepository)
+        IConcertRepository concertRepository,
+		ITicketRepository ticketRepository)
     {
         _logger = logger;
         _concertRepository = concertRepository;
+		_ticketRepository = ticketRepository;
 	}
 
 	[HttpGet("{concertId}/total-capacity")]
@@ -34,6 +37,42 @@ public class TicketTypesController : ControllerBase
 
 		_logger.LogInformation("Capacity: {capacity}", capacity);
 		return capacity;
+	}
+
+	[HttpGet("{concertId}/remaining-capacity")]
+	public async Task<int> GetRemainingCapacityByConcertId(int concertId)
+	{
+		_logger.LogInformation("Starting request: {Method} {Path}", HttpContext.Request.Method, HttpContext.Request.Path);
+
+		var ticketTypes = await _concertRepository.GetTicketTypesByConcertIdAsync(concertId);
+		int capacity = 0;
+
+		foreach (var ticketType in ticketTypes)
+		{
+			capacity += await _ticketRepository.GetAvailableTicketCount(concertId, ticketType.Id);
+		}
+
+		_logger.LogInformation("Capacity: {capacity}", capacity);
+		return capacity;
+	}
+
+	[HttpGet("{concertId}/total-capacity/{ticketTypeId}")]
+	public async Task<int> GetTotalCapacityOfTicketType(int concertId, int ticketTypeId)
+	{
+		_logger.LogInformation("Starting request: {Method} {Path}", HttpContext.Request.Method, HttpContext.Request.Path);
+		var ticketType = await _concertRepository.GetTicketTypeByIdAsync(concertId, ticketTypeId);
+		_logger.LogInformation("Capacity: {capacity}", ticketType.Capacity);
+		return ticketType.Capacity;
+	}
+
+	[HttpGet("{concertId}/available-capacity/{ticketTypeId}")]
+	public async Task<int> GetAvailableCapacityOfTicketType(int concertId, int ticketTypeId)
+	{
+		_logger.LogInformation("Starting request: {Method} {Path}", HttpContext.Request.Method, HttpContext.Request.Path);
+		int availableCapacity = await _ticketRepository.GetAvailableTicketCount(concertId, ticketTypeId);
+
+		_logger.LogInformation("Capacity: {capacity}", availableCapacity);
+		return availableCapacity;
 	}
 
 	[HttpGet("{concertId}/ticket-types")]

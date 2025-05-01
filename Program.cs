@@ -1,6 +1,7 @@
 
 using ConcertTicketApp.Db;
 using ConcertTicketApp.Interfaces;
+using ConcertTicketApp.Services;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,10 @@ builder.Services.AddCors(options =>
 	});
 });
 
+var testPaymentProcessor = new TestPaymentProcessor();
+builder.Services.AddSingleton<IPaymentProcessingService, TestPaymentProcessor>(s => testPaymentProcessor);
+var testIdempotencyCache = new TestIdempotencyCache();
+builder.Services.AddSingleton<IIdempotencyCache, TestIdempotencyCache>(s => testIdempotencyCache);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
