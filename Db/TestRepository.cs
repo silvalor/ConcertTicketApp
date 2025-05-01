@@ -5,13 +5,13 @@ namespace ConcertTicketApp.Db
 {
 	public class TestRepository : IConcertRepository, ITicketRepository
 	{
-		private static List<Concert> _concerts = new List<Concert>
+		private List<Concert> _concerts = new List<Concert>
 		{
 			new Concert
 			{
 				Id = 1,
 				Name = "Concert 1",
-				Date = DateTime.Now.AddDays(1),
+				Date = DateTime.Parse("2025-05-01T05:23:10.901Z"),
 				Venue = "Venue 1",
 				Description = "Description 1",
 			},
@@ -19,7 +19,7 @@ namespace ConcertTicketApp.Db
 			{
 				Id = 2,
 				Name = "Concert 2",
-				Date = DateTime.Now.AddDays(2),
+				Date = DateTime.Parse("2025-05-02T05:23:10.901Z"),
 				Venue = "Venue 2",
 				Description = "Description 2",
 			},
@@ -27,49 +27,49 @@ namespace ConcertTicketApp.Db
 			{
 				Id = 3,
 				Name = "Concert 3",
-				Date = DateTime.Now.AddDays(3),
+				Date = DateTime.Parse("2025-05-03T05:23:10.901Z"),
 				Venue = "Venue 3",
 				Description = "Description 3",
 			}
 		};
 
-		private static List<TicketType> _ticketTypes = new List<TicketType>
+		private List<TicketType> _ticketTypes = new List<TicketType>
 		{
 			new TicketType
 			{
-				ID = 1,
+				Id = 1,
 				Name = "VIP",
 				ConcertId = 1,
 				Price = 100.00m,
-				Available = 50
+				Capacity = 50
 			},
 			new TicketType
 			{
-				ID = 2,
+				Id = 2,
 				Name = "Regular",
 				ConcertId = 1,
 				Price = 50.00m,
-				Available = 100
+				Capacity = 100
 			},
 			new TicketType
 			{
-				ID = 3,
+				Id = 3,
 				Name = "Regular",
 				ConcertId = 2,
 				Price = 70.00m,
-				Available = 50
+				Capacity = 50
 			},
 			new TicketType
 			{
-				ID = 4,
+				Id = 4,
 				Name = "Regular",
 				ConcertId = 3,
 				Price = 80.00m,
-				Available = 100
+				Capacity = 100
 			}
 		};
 
-		private static List<Ticket> _tickets = new List<Ticket>
+		private List<Ticket> _tickets = new List<Ticket>
 		{
 			new Ticket
 			{
@@ -154,6 +154,27 @@ namespace ConcertTicketApp.Db
 		public async Task<IEnumerable<Ticket>> GetTicketsByCustomerIdAsync(int customerId)
 		{
 			return _tickets.Where(t => t.CustomerId == customerId);
+		}
+
+		public async Task AddTicketType(TicketType ticketType)
+		{
+			_ticketTypes.Add(ticketType);
+		}
+
+		public async Task<TicketType> GetTicketTypeByIdAsync(int concertId, int id)
+		{
+			return _ticketTypes.Where(tt => tt.ConcertId == concertId && tt.Id == id).FirstOrDefault();
+		}
+
+		public async Task UpdateTicketTypeAsync(TicketType newTicketType)
+		{
+			_ticketTypes.RemoveAll(tt => tt.Id == newTicketType.Id);
+			_ticketTypes.Add(newTicketType);
+		}
+
+		public async Task DeleteTicketTypeAsync(int concertId, int ticketTypeId)
+		{
+			_ticketTypes.RemoveAll(tt => tt.Id == ticketTypeId);
 		}
 	}
 }
