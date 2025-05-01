@@ -6,12 +6,12 @@ namespace ConcertTicketApp.Interfaces
 	{
 		Task<IEnumerable<Concert>> GetAllConcertsAsync();
 		Task<Concert> GetConcertByIdAsync(int id);
-		Task AddConcertAsync(Concert concert);
+		Task<Concert> AddConcertAsync(ConcertWithoutId concert);
 		Task UpdateConcertAsync(Concert concert);
 		Task DeleteConcertAsync(int id);
 		Task<IEnumerable<TicketType>> GetTicketTypesByConcertIdAsync(int concertId);
 		Task<TicketType> GetTicketTypeByIdAsync(int concertId, int id);
-		Task AddTicketType(TicketType ticketType);
+		Task<TicketType> AddTicketType(TicketTypeWithoutIds ticketType, int concertId);
 		Task UpdateTicketTypeAsync(TicketType newTicketType);
 		Task DeleteTicketTypeAsync(int concertId, int ticketTypeId);
 	}

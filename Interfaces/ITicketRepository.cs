@@ -2,7 +2,7 @@
 {
 	public interface ITicketRepository
 	{
-		Task AddTicketAsync(Ticket ticket);
+		Task<Ticket> AddTicketAsync(TicketWithoutId ticket);
 		Task DeleteTicketAsync(int id);
 		Task<IEnumerable<Ticket>> GetAllTicketsAsync();
 		Task<Ticket> GetTicketByIdAsync(int id);

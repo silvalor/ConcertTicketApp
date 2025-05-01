@@ -14,15 +14,12 @@ public class ConcertsController : ControllerBase
 {
 	private readonly ILogger<ConcertsController> _logger;
     private readonly IConcertRepository _concertRepository;
-	private readonly ITicketRepository _ticketRepository;
 
 	public ConcertsController(ILogger<ConcertsController> logger,
-        IConcertRepository concertRepository,
-        ITicketRepository ticketRepository)
+        IConcertRepository concertRepository)
     {
         _logger = logger;
         _concertRepository = concertRepository;
-		_ticketRepository = ticketRepository;
 	}
 
     [HttpGet]
@@ -39,8 +36,8 @@ public class ConcertsController : ControllerBase
 		return await _concertRepository.GetConcertByIdAsync(concertId);
 	}
 
-	[HttpPost("{concertId}")]
-    public async Task<IActionResult> Post(int concertId, [FromBody] ConcertWithoutId concert)
+	[HttpPost]
+    public async Task<IActionResult> Post([FromBody] ConcertWithoutId concert)
 	{
 		_logger.LogInformation("Starting request: {Method} {Path}", HttpContext.Request.Method, HttpContext.Request.Path);
 
@@ -50,17 +47,9 @@ public class ConcertsController : ControllerBase
 			return BadRequest("Concert cannot be null");
 		}
 
-		var existingConcert = await _concertRepository.GetConcertByIdAsync(concertId);
-		if (existingConcert != null)
-		{
-			_logger.LogInformation("Concert with ID {concertId} already exists", concertId);
-			return Conflict("A concert with that ID already exists. Use Put to modify the concert.");
-		}
-
-		var newConcert = concert.AddId(concertId);
-		await _concertRepository.AddConcertAsync(newConcert);
-		_logger.LogInformation("Concert {concertId} created", concertId);
-		return CreatedAtAction(nameof(Get), new { id = newConcert.Id }, newConcert);
+		Concert newConcert = await _concertRepository.AddConcertAsync(concert);
+		_logger.LogInformation("Concert {concertId} created", newConcert.Id);
+		return CreatedAtAction(nameof(Get), new { concertId = newConcert.Id }, newConcert);
 	}
 
 	[HttpPut("{concertId}")]
@@ -130,8 +119,8 @@ public class ConcertsController : ControllerBase
 		return await _concertRepository.GetTicketTypeByIdAsync(concertId, ticketTypeId);
 	}
 
-	[HttpPost("{concertId}/ticket-types/{ticketTypeId}")]
-	public async Task<IActionResult> Post(int concertId, int ticketTypeId, [FromBody] TicketTypeWithoutIds ticketType)
+	[HttpPost("{concertId}/ticket-types")]
+	public async Task<IActionResult> Post(int concertId, [FromBody] TicketTypeWithoutIds ticketType)
 	{
 		_logger.LogInformation("Starting request: {Method} {Path}", HttpContext.Request.Method, HttpContext.Request.Path);
 
@@ -153,17 +142,9 @@ public class ConcertsController : ControllerBase
 			return BadRequest("No negative capacities.");
 		}
 
-		var existingTicket = await _concertRepository.GetTicketTypeByIdAsync(concertId, ticketTypeId);
-		if (existingTicket != null)
-		{
-			_logger.LogInformation("Invalid attempt to add TicketType with duplicate Id on Post");
-			return Conflict("A ticket type with that ID already exists. Use Put to modify the ticket type.");
-		}
-
-		TicketType newTicketType = ticketType.AddIds(concertId, ticketTypeId);
-		await _concertRepository.AddTicketType(newTicketType);
-		_logger.LogInformation("Ticket Type {concertId} {ticketTypeId} created", concertId, ticketTypeId);
-		return CreatedAtAction(nameof(GetTicketType), new { concertId = concertId, ticketTypeId = ticketTypeId }, newTicketType);
+		var newTicketType = await _concertRepository.AddTicketType(ticketType, concertId);
+		_logger.LogInformation("Ticket Type {concertId} {ticketTypeId} created", concertId, newTicketType.Id);
+		return CreatedAtAction(nameof(GetTicketType), new { concertId = concertId, ticketTypeId = newTicketType.Id }, newTicketType);
 	}
 
 	[HttpPut("{concertId}/ticket-types/{ticketTypeId}")]

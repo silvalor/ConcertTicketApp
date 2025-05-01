@@ -23,4 +23,20 @@ public class TicketsController : ControllerBase
         _concertRepository = concertRepository;
 		_ticketRepository = ticketRepository;
 	}
+
+	[HttpPost]
+	public async Task<IActionResult> Post([FromBody] ConcertWithoutId concert)
+	{
+		_logger.LogInformation("Starting request: {Method} {Path}", HttpContext.Request.Method, HttpContext.Request.Path);
+
+		if (concert == null)
+		{
+			_logger.LogInformation("Invalid null Concert Input on Post");
+			return BadRequest("Concert cannot be null");
+		}
+
+		Concert newConcert = await _concertRepository.AddConcertAsync(concert);
+		_logger.LogInformation("Concert {concertId} created", newConcert.Id);
+		return CreatedAtAction(nameof(Get), new { concertId = newConcert.Id }, newConcert);
+	}
 }

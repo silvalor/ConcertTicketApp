@@ -1,10 +1,13 @@
 ﻿using ConcertTicketApp.Interfaces;
 using ConcertTicketApp.Models;
+using System;
+using System.Net.Sockets;
 
 namespace ConcertTicketApp.Db
 {
 	public class TestRepository : IConcertRepository, ITicketRepository
 	{
+		private int _nextConcertId = 4;
 		private List<Concert> _concerts = new List<Concert>
 		{
 			new Concert
@@ -33,6 +36,7 @@ namespace ConcertTicketApp.Db
 			}
 		};
 
+		private int _nextTicketTypeId = 4;
 		private List<TicketType> _ticketTypes = new List<TicketType>
 		{
 			new TicketType
@@ -69,6 +73,7 @@ namespace ConcertTicketApp.Db
 			}
 		};
 
+		private int _nextTicketId = 3;
 		private List<Ticket> _tickets = new List<Ticket>
 		{
 			new Ticket
@@ -93,9 +98,12 @@ namespace ConcertTicketApp.Db
 			}
 		};
 
-		public async Task AddConcertAsync(Concert concert)
+		public async Task<Concert> AddConcertAsync(ConcertWithoutId concert)
 		{
-			_concerts.Add(concert);
+			var newConcert = concert.AddId(_nextConcertId);
+			_nextConcertId++;
+			_concerts.Add(newConcert);
+			return newConcert;
 		}
 
 		public async Task DeleteConcertAsync(int id)
@@ -119,9 +127,12 @@ namespace ConcertTicketApp.Db
 			_concerts.Add(concert);
 		}
 
-		public async Task AddTicketAsync(Ticket ticket)
+		public async Task<Ticket> AddTicketAsync(TicketWithoutId ticket)
 		{
-			_tickets.Add(ticket);
+			Ticket newTicket = ticket.ToTicket(_nextTicketId);
+			_nextTicketId++;
+			_tickets.Add(newTicket);
+			return newTicket;
 		}
 		public async Task DeleteTicketAsync(int id)
 		{
@@ -156,9 +167,12 @@ namespace ConcertTicketApp.Db
 			return _tickets.Where(t => t.CustomerId == customerId);
 		}
 
-		public async Task AddTicketType(TicketType ticketType)
+		public async Task<TicketType> AddTicketType(TicketTypeWithoutIds ticketType, int concertId)
 		{
-			_ticketTypes.Add(ticketType);
+			var newTicketType = ticketType.AddIds(concertId, _nextTicketTypeId);
+			_nextConcertId++;
+			_ticketTypes.Add(newTicketType);
+			return newTicketType;
 		}
 
 		public async Task<TicketType> GetTicketTypeByIdAsync(int concertId, int id)
