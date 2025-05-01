@@ -1,10 +1,19 @@
 
 using ConcertTicketApp.Db;
 using ConcertTicketApp.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Add API versioning
+builder.Services.AddApiVersioning(options =>
+{
+	options.DefaultApiVersion = new ApiVersion(1, 0);
+	options.AssumeDefaultVersionWhenUnspecified = true;
+	options.ReportApiVersions = true;  // Header info for clients to see the supported versions
+});
 
 //These are useful for testing. Should be removed before production.
 var testRepository = new TestRepository();

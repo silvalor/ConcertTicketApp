@@ -38,32 +38,32 @@ namespace ConcertTicketApp.Db
 			new TicketType
 			{
 				Id = 1,
-				Name = "VIP",
 				ConcertId = 1,
+				Name = "VIP",
 				Price = 100.00m,
 				Capacity = 50
 			},
 			new TicketType
 			{
 				Id = 2,
-				Name = "Regular",
 				ConcertId = 1,
+				Name = "Regular",
 				Price = 50.00m,
 				Capacity = 100
 			},
 			new TicketType
 			{
 				Id = 3,
-				Name = "Regular",
 				ConcertId = 2,
+				Name = "Regular",
 				Price = 70.00m,
 				Capacity = 50
 			},
 			new TicketType
 			{
 				Id = 4,
-				Name = "Regular",
 				ConcertId = 3,
+				Name = "Regular",
 				Price = 80.00m,
 				Capacity = 100
 			}

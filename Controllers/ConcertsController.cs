@@ -7,7 +7,8 @@ using System.ComponentModel.Design;
 namespace ConcertTicketApp.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("v{version:apiVersion}/concerts")]
+[ApiVersion("1.0")]
 public class ConcertsController : ControllerBase
 {
 	private readonly ILogger<ConcertsController> _logger;
@@ -85,7 +86,7 @@ public class ConcertsController : ControllerBase
 		return NoContent();
 	}
 
-	[HttpGet("{concertId}/TotalCapacity")]
+	[HttpGet("{concertId}/total-capacity")]
 	public async Task<int> GetTotalCapacityByConcertId(int concertId)
 	{
 		var ticketTypes = await _concertRepository.GetTicketTypesByConcertIdAsync(concertId);
@@ -95,19 +96,19 @@ public class ConcertsController : ControllerBase
 		return capacity;
 	}
 
-	[HttpGet("{concertId}/TicketTypes")]
+	[HttpGet("{concertId}/ticket-types")]
 	public async Task<IEnumerable<TicketType>> GetTicketTypes(int concertId)
 	{
 		return await _concertRepository.GetTicketTypesByConcertIdAsync(concertId);
 	}
 
-	[HttpGet("{concertId}/TicketTypes/{ticketTypeId}")]
+	[HttpGet("{concertId}/ticket-types/{ticketTypeId}")]
 	public async Task<TicketType> GetTicketType(int concertId, int ticketTypeId)
 	{
 		return await _concertRepository.GetTicketTypeByIdAsync(concertId, ticketTypeId);
 	}
 
-	[HttpPost("{concertId}/TicketTypes/{ticketTypeId}")]
+	[HttpPost("{concertId}/ticket-types/{ticketTypeId}")]
 	public async Task<IActionResult> Post(int concertId, int ticketTypeId, [FromBody] TicketTypeWithoutIds ticketType)
 	{
 		if (ticketType == null)
@@ -136,7 +137,7 @@ public class ConcertsController : ControllerBase
 		return CreatedAtAction(nameof(GetTicketType), new { concertId = concertId, ticketTypeId = ticketTypeId }, newTicketType);
 	}
 
-	[HttpPut("{concertId}/TicketTypes/{ticketTypeId}")]
+	[HttpPut("{concertId}/ticket-types/{ticketTypeId}")]
 	public async Task<IActionResult> Put(
 		int concertId,
 		int ticketTypeId,
@@ -168,7 +169,7 @@ public class ConcertsController : ControllerBase
 		return NoContent();
 	}
 
-	[HttpDelete("{concertId}/TicketTypes/{ticketTypeId}")]
+	[HttpDelete("{concertId}/ticket-types/{ticketTypeId}")]
 	public async Task<IActionResult> Delete(int concertId, int ticketTypeId)
 	{
 		var concert = await _concertRepository.GetTicketTypeByIdAsync(concertId, ticketTypeId);
