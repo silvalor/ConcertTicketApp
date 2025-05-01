@@ -3,6 +3,7 @@ using ConcertTicketApp.Db;
 using ConcertTicketApp.Interfaces;
 using ConcertTicketApp.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,12 @@ builder.Services.AddApiVersioning(options =>
 var testRepository = new TestRepository();
 builder.Services.AddSingleton<IConcertRepository, TestRepository>(s => testRepository);
 builder.Services.AddSingleton<ITicketRepository, TestRepository>(s => testRepository);
+
+//For swapping in the real database.
+//builder.Services.AddDbContext<ConcertDbContext>(options =>
+//	options.UseSqlServer(builder.Configuration.GetConnectionString("ConcertDb")));
+//builder.Services.AddScoped<IConcertRepository, BasicRealRepository>();
+
 builder.Services.AddCors(options =>
 {
 	options.AddPolicy("AllowAll", policy =>

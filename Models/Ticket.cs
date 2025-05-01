@@ -1,9 +1,13 @@
 using ConcertTicketApp.Models;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace ConcertTicketApp
 {
     public class Ticket
     {
+		[Key]
+		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 		public int ConcertId { get; set; }
 		public int TicketTypeId { get; set; }
